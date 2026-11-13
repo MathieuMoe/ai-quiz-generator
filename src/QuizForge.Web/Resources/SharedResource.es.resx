@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_QuizGenerator" xml:space="preserve"><value>Generador de tests</value></data>
+  <data name="Nav_Resources" xml:space="preserve"><value>Recursos</value></data>
+  <data name="Nav_SourceCode" xml:space="preserve"><value>Código fuente</value></data>
+  <data name="Nav_ClaudeDocs" xml:space="preserve"><value>Documentación de Claude</value></data>
+  <data name="Nav_OpenMenu" xml:space="preserve"><value>Abrir el menú</value></data>
+  <data name="Nav_ToggleTheme" xml:space="preserve"><value>Cambiar el modo oscuro</value></data>
+  <data name="Nav_EngineTooltip" xml:space="preserve"><value>Motor usado para generar los tests</value></data>
+  <data name="Engine_Demo" xml:space="preserve"><value>Demo (sin conexión)</value></data>
+  <data name="Nav_Language" xml:space="preserve"><value>Idioma de la interfaz</value></data>
+  <data name="Index_Heading" xml:space="preserve"><value>Convierte cualquier texto en un examen</value></data>
+  <data name="Index_Subtitle" xml:space="preserve"><value>Pega una lección, sube un PDF o importa una página web. QuizForge escribe un resumen y un test de opción múltiple con explicaciones.</value></data>
+  <data name="Kpi_Questions" xml:space="preserve"><value>Preguntas</value></data>
+  <data name="Kpi_Difficulty" xml:space="preserve"><value>Dificultad</value></data>
+  <data name="Kpi_Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Kpi_Score" xml:space="preserve"><value>Nota</value></data>
+  <data name="Form_Source" xml:space="preserve"><value>Fuente</value></data>
+  <data name="Form_Document" xml:space="preserve"><value>Documento</value></data>
+  <data name="Form_Upload" xml:space="preserve"><value>Sube un archivo</value></data>
+  <data name="Form_DragDrop" xml:space="preserve"><value>o arrástralo aquí</value></data>
+  <data name="Form_FileTypes" xml:space="preserve"><value>PDF, TXT o MD · hasta 10 MB</value></data>
+  <data name="Form_WebPage" xml:space="preserve"><value>Página web</value></data>
+  <data name="Form_Import" xml:space="preserve"><value>Importar</value></data>
+  <data name="Form_PasteText" xml:space="preserve"><value>O pega tu texto</value></data>
+  <data name="Form_Placeholder" xml:space="preserve"><value>Al menos {0} caracteres…</value></data>
+  <data name="Form_Questions" xml:space="preserve"><value>Preguntas</value></data>
+  <data name="Form_Difficulty" xml:space="preserve"><value>Dificultad</value></data>
+  <data name="Form_Language" xml:space="preserve"><value>Idioma del test</value></data>
+  <data name="Form_Generate" xml:space="preserve"><value>Generar el test</value></data>
+  <data name="Form_Generating" xml:space="preserve"><value>Generando…</value></data>
+  <data name="Difficulty_Easy" xml:space="preserve"><value>Fácil</value></data>
+  <data name="Difficulty_Medium" xml:space="preserve"><value>Media</value></data>
+  <data name="Difficulty_Hard" xml:space="preserve"><value>Difícil</value></data>
+  <data name="Language_English" xml:space="preserve"><value>Inglés</value></data>
+  <data name="Language_Spanish" xml:space="preserve"><value>Español</value></data>
+  <data name="Language_French" xml:space="preserve"><value>Francés</value></data>
+  <data name="Language_Catalan" xml:space="preserve"><value>Catalán</value></data>
+  <data name="Quiz_Error" xml:space="preserve"><value>No se pudo generar el test.</value></data>
+  <data name="Quiz_Summary" xml:space="preserve"><value>Resumen.</value></data>
+  <data name="Quiz_Check" xml:space="preserve"><value>Comprobar mis respuestas</value></data>
+  <data name="Quiz_TryAgain" xml:space="preserve"><value>Volver a intentarlo</value></data>
+  <data name="Empty_Title" xml:space="preserve"><value>Tu test aparecerá aquí</value></data>
+  <data name="Empty_Engine" xml:space="preserve"><value>Motor:</value></data>
+  <data name="Empty_AddKey" xml:space="preserve"><value>Añade una clave de API de Anthropic para generar las preguntas con Claude.</value></data>
+  <data name="Error_PdfNeedsJs" xml:space="preserve"><value>La importación de PDF necesita JavaScript. Actívalo o pega el texto.</value></data>
+  <data name="Error_FileType" xml:space="preserve"><value>Solo se aceptan archivos .txt o .md de hasta 1 MB.</value></data>
+  <data name="Validation_TextTooShort" xml:space="preserve"><value>El texto debe tener al menos {0} caracteres.</value></data>
+  <data name="Validation_TextTooLong" xml:space="preserve"><value>El texto debe tener como máximo {0:N0} caracteres.</value></data>
+  <data name="Validation_QuestionCountOutOfRange" xml:space="preserve"><value>El número de preguntas debe estar entre {0} y {1}.</value></data>
+  <data name="Validation_UnknownDifficulty" xml:space="preserve"><value>Dificultad desconocida.</value></data>
+  <data name="Validation_UnknownLanguage" xml:space="preserve"><value>Idioma desconocido.</value></data>
+  <data name="Js_Reading" xml:space="preserve"><value>Leyendo {0}…</value></data>
+  <data name="Js_TooLarge" xml:space="preserve"><value>El archivo supera los 10 MB.</value></data>
+  <data name="Js_NoText" xml:space="preserve"><value>Este PDF no tiene texto seleccionable (puede ser una imagen escaneada).</value></data>
+  <data name="Js_Unsupported" xml:space="preserve"><value>Solo se admiten archivos PDF, TXT y MD.</value></data>
+  <data name="Js_ReadError" xml:space="preserve"><value>No se pudo leer el archivo. ¿Es un PDF válido y sin protección?</value></data>
+  <data name="Js_Page" xml:space="preserve"><value>1 página</value></data>
+  <data name="Js_Pages" xml:space="preserve"><value>{0} páginas</value></data>
+  <data name="Js_OfPages" xml:space="preserve"><value>de {0}</value></data>
+  <data name="Js_Characters" xml:space="preserve"><value>{0} caracteres</value></data>
+  <data name="Js_Truncated" xml:space="preserve"><value>recortado a {0} caracteres</value></data>
+  <data name="Js_Loading" xml:space="preserve"><value>Cargando la página…</value></data>
+  <data name="Js_invalid_url" xml:space="preserve"><value>Introduce una dirección web válida (https://…).</value></data>
+  <data name="Js_blocked_address" xml:space="preserve"><value>Esta dirección apunta a una red privada y no se puede importar.</value></data>
+  <data name="Js_fetch_failed" xml:space="preserve"><value>No se pudo descargar la página.</value></data>
+  <data name="Js_unsupported_content" xml:space="preserve"><value>Esta dirección no es una página web (HTML o texto).</value></data>
+  <data name="Js_too_large" xml:space="preserve"><value>La página es demasiado grande.</value></data>
+  <data name="Js_no_text" xml:space="preserve"><value>La página no contiene suficiente texto.</value></data>
+  <data name="Js_rate_limited" xml:space="preserve"><value>Demasiadas peticiones. Espera un minuto y vuelve a intentarlo.</value></data>
+  <data name="Api_Subtitle" xml:space="preserve"><value>Las mismas funciones, desde cualquier aplicación. Limitado a 10 peticiones por minuto por IP.</value></data>
+  <data name="Api_GenerateTitle" xml:space="preserve"><value>Generar un test</value></data>
+  <data name="Api_ImportTitle" xml:space="preserve"><value>Importar una página web</value></data>
+  <data name="Api_ImportDesc" xml:space="preserve"><value>Devuelve el texto legible de una página web pública, listo para enviar a /api/quiz. Las direcciones privadas y locales están bloqueadas.</value></data>
+  <data name="Api_Request" xml:space="preserve"><value>Petición</value></data>
+  <data name="Api_Response" xml:space="preserve"><value>Respuesta</value></data>
+  <data name="Api_Parameters" xml:space="preserve"><value>Parámetros</value></data>
+  <data name="Api_ParamText" xml:space="preserve"><value>Texto a usar, de {0} a {1:N0} caracteres</value></data>
+  <data name="Api_ParamCount" xml:space="preserve"><value>de {0} a {1} (5 por defecto)</value></data>
+  <data name="Api_ParamUrl" xml:space="preserve"><value>Dirección de una página web pública (http o https)</value></data>
+  <data name="Api_Errors" xml:space="preserve"><value>Errores</value></data>
+  <data name="Api_ErrorValidation" xml:space="preserve"><value>validación</value></data>
+  <data name="Api_ErrorRate" xml:space="preserve"><value>límite de peticiones</value></data>
+  <data name="Api_ErrorAi" xml:space="preserve"><value>servicio de IA o sitio web</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Algo ha salido mal</value></data>
+  <data name="Error_Text" xml:space="preserve"><value>Se ha producido un error inesperado. Inténtalo de nuevo.</value></data>
+  <data name="Error_Back" xml:space="preserve"><value>Volver al inicio</value></data>
+</root>

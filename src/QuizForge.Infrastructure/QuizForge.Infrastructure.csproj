@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>QuizForge.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Gives access to HttpClientFactory, Options, Logging and DI without extra NuGet packages -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuizForge.Core\QuizForge.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="QuizForge.Tests" />
+  </ItemGroup>
+
+</Project>

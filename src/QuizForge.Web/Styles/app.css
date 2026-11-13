@@ -1,0 +1,17 @@
+/* Tailwind CSS v4 + Preline UI. Build with: npm run build:css */
+@import "tailwindcss" source(none);
+
+@source "../Pages/**/*.cshtml";
+@source "../wwwroot/js/**/*.js";
+@source "../node_modules/preline/dist/*.js";
+
+/* Preline UI */
+@import "../node_modules/preline/variants.css";
+@import "../node_modules/preline/theme.css";
+
+/* Dark mode is driven by the .dark class on <html> (Preline convention) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+}

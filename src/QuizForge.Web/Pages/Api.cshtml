@@ -1,0 +1,97 @@
+@page
+@model ApiModel
+@{
+    ViewData["Title"] = "API";
+    const string card = "flex flex-col bg-card border border-card-line shadow-2xs rounded-xl";
+    const string code = "block p-4 rounded-lg bg-gray-900 text-gray-100 text-xs leading-relaxed overflow-x-auto font-mono dark:bg-neutral-950";
+    const string method = "py-0.5 px-2 rounded-md text-xs font-semibold bg-teal-100 text-teal-800 dark:bg-teal-500/10 dark:text-teal-400";
+    var host = $"{Request.Scheme}://{Request.Host}";
+}
+
+<div>
+    <h1 class="text-2xl font-semibold text-foreground">JSON API</h1>
+    <p class="mt-1 text-sm text-muted-foreground-1">@L["Api_Subtitle"]</p>
+</div>
+
+<div class="grid lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+    <div class="lg:col-span-8 space-y-4 sm:space-y-6">
+        <!-- POST /api/quiz -->
+        <div class="@card">
+            <div class="py-3 px-4 md:px-5 border-b border-card-divider flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span class="@method">POST</span>
+                <code class="text-sm font-mono text-foreground">/api/quiz</code>
+                <span class="text-sm text-muted-foreground-1">· @L["Api_GenerateTitle"]</span>
+            </div>
+            <div class="p-4 md:p-5 space-y-5 text-sm">
+                <div>
+                    <h2 class="mb-2 font-semibold text-foreground">@L["Api_Request"]</h2>
+                    <pre class="@code">curl -X POST @host/api/quiz \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sourceText": "…",
+    "questionCount": 5,
+    "difficulty": "Medium",
+    "language": "Spanish"
+  }'</pre>
+                </div>
+                <div>
+                    <h2 class="mb-2 font-semibold text-foreground">@L["Api_Response"] <span class="font-normal text-muted-foreground-1">200 OK</span></h2>
+                    <pre class="@code">{
+  "title": "Photosynthesis",
+  "summary": "Plants turn light into chemical energy…",
+  "questions": [
+    {
+      "prompt": "Where does photosynthesis mainly happen?",
+      "options": ["Mitochondria", "Chloroplasts", "Nucleus", "Ribosomes"],
+      "correctIndex": 1,
+      "explanation": "The text says it takes place in the chloroplasts."
+    }
+  ]
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- POST /api/import-url -->
+        <div class="@card">
+            <div class="py-3 px-4 md:px-5 border-b border-card-divider flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span class="@method">POST</span>
+                <code class="text-sm font-mono text-foreground">/api/import-url</code>
+                <span class="text-sm text-muted-foreground-1">· @L["Api_ImportTitle"]</span>
+            </div>
+            <div class="p-4 md:p-5 space-y-5 text-sm">
+                <p class="text-muted-foreground-2">@L["Api_ImportDesc"]</p>
+                <pre class="@code">curl -X POST @host/api/import-url \
+  -H "Content-Type: application/json" \
+  -d '{ "url": "https://en.wikipedia.org/wiki/Photosynthesis" }'
+
+{ "title": "Photosynthesis - Wikipedia", "text": "…", "url": "https://…", "truncated": false }</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="@card lg:col-span-4">
+        <div class="py-3 px-4 md:px-5 border-b border-card-divider">
+            <h2 class="text-base font-semibold text-foreground">@L["Api_Parameters"]</h2>
+        </div>
+        <ul class="divide-y divide-card-divider text-sm">
+            @foreach (var (name, desc) in new[]
+            {
+                ("sourceText", L["Api_ParamText", QuizRequest.MinTextLength, QuizRequest.MaxTextLength].Value),
+                ("questionCount", L["Api_ParamCount", QuizRequest.MinQuestions, QuizRequest.MaxQuestions].Value),
+                ("difficulty", string.Join(", ", Enum.GetNames<Difficulty>())),
+                ("language", string.Join(", ", Enum.GetNames<QuizLanguage>())),
+                ("url", L["Api_ParamUrl"].Value),
+            })
+            {
+                <li class="py-3 px-4 md:px-5">
+                    <code class="font-mono text-xs text-primary">@name</code>
+                    <p class="mt-0.5 text-muted-foreground-1">@desc</p>
+                </li>
+            }
+        </ul>
+        <div class="py-3 px-4 md:px-5 border-t border-card-divider text-xs text-muted-foreground-1">
+            @L["Api_Errors"]: <code class="font-mono">400</code> @L["Api_ErrorValidation"], <code class="font-mono">429</code> @L["Api_ErrorRate"], <code class="font-mono">502</code> @L["Api_ErrorAi"].
+        </div>
+    </div>
+</div>

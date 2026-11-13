@@ -1,0 +1,207 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = L["Nav_QuizGenerator"];
+    string[] letters = ["A", "B", "C", "D", "E", "F"];
+    const string card = "flex flex-col bg-card border border-card-line shadow-2xs rounded-xl";
+    const string input = "py-2.5 px-3 block w-full bg-layer border border-layer-line rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-hidden disabled:opacity-50";
+    const string label = "block mb-2 text-sm font-medium text-foreground";
+}
+
+<!-- Page title -->
+<div class="flex flex-wrap justify-between items-end gap-3">
+    <div>
+        <h1 class="text-2xl font-semibold text-foreground">@L["Index_Heading"]</h1>
+        <p class="mt-1 text-sm text-muted-foreground-1">@L["Index_Subtitle"]</p>
+    </div>
+</div>
+
+@if (Model.Quiz is { } q0)
+{
+    <!-- KPI cards -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        @foreach (var (title, value, icon) in new[]
+        {
+            (L["Kpi_Questions"].Value, q0.Questions.Count.ToString(), "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"),
+            (L["Kpi_Difficulty"].Value, L[$"Difficulty_{Model.Input.Difficulty}"].Value, "M3 3v18h18M7 16l4-4 4 4 5-6"),
+            (L["Kpi_Language"].Value, L[$"Language_{Model.Input.Language}"].Value, "M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"),
+        })
+        {
+            <div class="@card p-4 md:p-5">
+                <div class="flex items-center gap-x-2">
+                    <svg class="size-4 text-muted-foreground-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="@icon" /></svg>
+                    <p class="text-xs uppercase text-muted-foreground-1">@title</p>
+                </div>
+                <h3 class="mt-2 text-xl sm:text-2xl font-medium text-foreground">@value</h3>
+            </div>
+        }
+        <div class="@card p-4 md:p-5">
+            <div class="flex items-center gap-x-2">
+                <svg class="size-4 text-muted-foreground-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11" /></svg>
+                <p class="text-xs uppercase text-muted-foreground-1">@L["Kpi_Score"]</p>
+            </div>
+            <h3 class="mt-2 text-xl sm:text-2xl font-medium text-foreground" id="kpi-score">–</h3>
+        </div>
+    </div>
+}
+
+<div class="grid lg:grid-cols-12 gap-4 sm:gap-6 items-start">
+
+    <!-- ========== FORM ========== -->
+    <form method="post" enctype="multipart/form-data" id="quiz-form" class="@card lg:col-span-5 lg:sticky lg:top-21">
+        <div class="py-3 px-4 md:px-5 border-b border-card-divider flex items-center justify-between">
+            <h2 class="text-base font-semibold text-foreground">@L["Form_Source"]</h2>
+            <span class="text-xs text-muted-foreground-1"><span id="char-count">0</span> / @QuizRequest.MaxTextLength.ToString("N0")</span>
+        </div>
+
+        <div class="p-4 md:p-5 space-y-5">
+            <div asp-validation-summary="All" class="p-3 text-sm rounded-lg bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30 [&.validation-summary-valid]:hidden [&_ul]:list-disc [&_ul]:ps-4" role="alert"></div>
+
+            <!-- Drop zone -->
+            <div>
+                <span class="@label">@L["Form_Document"]</span>
+                <label for="Input_File" id="dropzone"
+                       class="flex flex-col items-center justify-center gap-y-1 p-5 text-center cursor-pointer bg-layer border-2 border-dashed border-layer-line rounded-xl hover:border-primary hover:bg-layer-hover transition-colors">
+                    <svg class="size-8 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3" /></svg>
+                    <span class="text-sm text-foreground"><span class="font-medium text-primary">@L["Form_Upload"]</span> @L["Form_DragDrop"]</span>
+                    <span class="text-xs text-muted-foreground-1">@L["Form_FileTypes"]</span>
+                </label>
+                <input asp-for="Input.File" type="file" accept=".pdf,.txt,.md,application/pdf,text/plain,text/markdown" class="sr-only" />
+                <p id="file-status" class="mt-2 text-xs text-muted-foreground-1" hidden></p>
+            </div>
+
+            <!-- Web page import -->
+            <div>
+                <label for="import-url" class="@label">@L["Form_WebPage"]</label>
+                <div class="flex rounded-lg">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                            <svg class="size-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                        </div>
+                        <input id="import-url" type="url" inputmode="url" autocomplete="url" placeholder="https://…" class="@input ps-9! rounded-e-none!" />
+                    </div>
+                    <button type="button" id="import-btn" class="group shrink-0 py-2.5 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-e-lg border border-s-0 border-layer-line bg-layer text-foreground hover:bg-layer-hover focus:outline-hidden disabled:opacity-60 disabled:pointer-events-none">
+                        <span class="hidden group-[.loading]:inline-block size-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true"></span>
+                        @L["Form_Import"]
+                    </button>
+                </div>
+                <p id="url-status" class="mt-2 text-xs text-muted-foreground-1" hidden></p>
+            </div>
+
+            <div>
+                <label asp-for="Input.Text" class="@label">@L["Form_PasteText"]</label>
+                <textarea asp-for="Input.Text" rows="9" class="@input" maxlength="@QuizRequest.MaxTextLength"
+                          placeholder="@L["Form_Placeholder", QuizRequest.MinTextLength]"></textarea>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label asp-for="Input.QuestionCount" class="@label">@L["Form_Questions"]</label>
+                    <input asp-for="Input.QuestionCount" type="number" min="@QuizRequest.MinQuestions" max="@QuizRequest.MaxQuestions" class="@input" />
+                </div>
+                <div>
+                    <label asp-for="Input.Difficulty" class="@label">@L["Form_Difficulty"]</label>
+                    <select asp-for="Input.Difficulty" asp-items="@(Enum.GetValues<Difficulty>().Select(d => new SelectListItem(L[$"Difficulty_{d}"], d.ToString())))" class="@input"></select>
+                </div>
+                <div>
+                    <label asp-for="Input.Language" class="@label">@L["Form_Language"]</label>
+                    <select asp-for="Input.Language" asp-items="@(Enum.GetValues<QuizLanguage>().Select(l => new SelectListItem(L[$"Language_{l}"], l.ToString())))" class="@input"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-3 px-4 md:px-5 border-t border-card-divider">
+            <button type="submit" id="generate-btn" class="group w-full py-2.5 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover focus:outline-hidden focus:bg-primary-focus disabled:opacity-70 disabled:pointer-events-none">
+                <svg class="size-4 group-[.loading]:hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" /></svg>
+                <span class="hidden group-[.loading]:inline-block size-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true"></span>
+                <span class="group-[.loading]:hidden">@L["Form_Generate"]</span>
+                <span class="hidden group-[.loading]:inline">@L["Form_Generating"]</span>
+            </button>
+        </div>
+    </form>
+
+    <!-- ========== RESULT ========== -->
+    <section class="lg:col-span-7 space-y-4" aria-live="polite">
+        @if (Model.ErrorMessage is not null)
+        {
+            <div class="p-4 text-sm rounded-xl bg-red-50 text-red-700 border border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30" role="alert">
+                <span class="font-semibold">@L["Quiz_Error"]</span> @Model.ErrorMessage
+            </div>
+        }
+
+        @if (Model.Quiz is { } quiz)
+        {
+            <article class="@card" id="quiz">
+                <div class="py-3 px-4 md:px-5 border-b border-card-divider flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-base font-semibold text-foreground">@quiz.Title</h2>
+                    <div class="flex gap-x-2">
+                        @foreach (var (fmt, text) in new[] { ("md", "Markdown"), ("json", "JSON") })
+                        {
+                            <button type="button" data-export="@fmt" class="py-1.5 px-2.5 inline-flex items-center gap-x-1.5 text-xs font-medium rounded-lg border border-layer-line bg-layer text-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden">
+                                <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" /></svg>
+                                @text
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="p-4 md:p-5">
+                    <div class="p-4 rounded-lg bg-surface/60 text-sm text-muted-foreground-2">
+                        <span class="font-semibold text-foreground">@L["Quiz_Summary"]</span> @quiz.Summary
+                    </div>
+
+                    <ol class="mt-2 divide-y divide-card-divider">
+                        @for (var i = 0; i < quiz.Questions.Count; i++)
+                        {
+                            var q = quiz.Questions[i];
+                            <li class="question py-5" data-correct="@q.CorrectIndex">
+                                <p class="mb-3 text-sm font-semibold text-foreground"><span class="text-primary">@(i + 1).</span> @q.Prompt</p>
+                                <div class="grid gap-2">
+                                    @for (var o = 0; o < q.Options.Count; o++)
+                                    {
+                                        <label class="option group/opt flex items-center gap-x-3 py-2.5 px-3 text-sm text-foreground bg-layer border border-layer-line rounded-lg cursor-pointer hover:border-primary has-checked:border-primary has-checked:bg-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-primary/30
+                                                      [&.is-correct]:border-teal-500! [&.is-correct]:bg-teal-50! dark:[&.is-correct]:bg-teal-500/10!
+                                                      [&.is-wrong]:border-red-500! [&.is-wrong]:bg-red-50! dark:[&.is-wrong]:bg-red-500/10!">
+                                            <input type="radio" name="q@(i)" value="@o" class="peer sr-only" />
+                                            <span class="shrink-0 size-6 grid place-items-center rounded-full bg-surface text-xs font-semibold text-muted-foreground-2 peer-checked:bg-primary peer-checked:text-primary-foreground
+                                                         group-[.is-correct]/opt:bg-teal-500! group-[.is-correct]/opt:text-white! group-[.is-wrong]/opt:bg-red-500! group-[.is-wrong]/opt:text-white!">@letters[o]</span>
+                                            <span>@q.Options[o]</span>
+                                        </label>
+                                    }
+                                </div>
+                                <p class="explanation mt-3 ps-3 border-s-2 border-teal-500 text-sm text-muted-foreground-1" hidden>@q.Explanation</p>
+                            </li>
+                        }
+                    </ol>
+                </div>
+
+                <div class="py-3 px-4 md:px-5 border-t border-card-divider flex flex-wrap items-center gap-3">
+                    <button type="button" id="check-btn" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary-hover focus:outline-hidden">@L["Quiz_Check"]</button>
+                    <button type="button" id="reset-btn" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-layer-line bg-layer text-foreground shadow-2xs hover:bg-layer-hover focus:outline-hidden" hidden>@L["Quiz_TryAgain"]</button>
+                    <span id="score" class="ms-auto py-1 px-3 rounded-full text-sm font-semibold" hidden></span>
+                </div>
+            </article>
+
+            <script type="application/json" id="quiz-json">@Html.Raw(Model.QuizJson)</script>
+            <textarea id="quiz-md" hidden>@Model.QuizMarkdown</textarea>
+        }
+        else if (Model.ErrorMessage is null)
+        {
+            <div class="@card min-h-80 items-center justify-center p-8 text-center">
+                <span class="size-14 grid place-items-center rounded-full bg-surface text-primary">
+                    <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+                </span>
+                <h3 class="mt-4 text-base font-semibold text-foreground">@L["Empty_Title"]</h3>
+                <p class="mt-1 max-w-sm text-sm text-muted-foreground-1">
+                    @L["Empty_Engine"] <span class="font-medium text-foreground">@(Model.EngineName == "Claude" ? "Claude" : L["Engine_Demo"])</span>.
+                    @if (Model.EngineName != "Claude") { <text>@L["Empty_AddKey"]</text> }
+                </p>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script src="~/js/quiz.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/document-import.js" asp-append-version="true"></script>
+}
