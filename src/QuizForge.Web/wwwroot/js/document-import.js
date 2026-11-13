@@ -1,4 +1,4 @@
-// QuizForge – imports a PDF / TXT / MD file or a web page and puts its text in the form.
+// MatGPT Quiz – imports a PDF / TXT / MD file or a web page and puts its text in the form.
 // PDF text extraction runs in the browser with Mozilla pdf.js: documents are never stored on the server.
 import * as pdfjs from "/lib/pdfjs/pdf.min.mjs";
 

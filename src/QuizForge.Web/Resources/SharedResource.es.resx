@@ -14,7 +14,7 @@
   <data name="Engine_Demo" xml:space="preserve"><value>Demo (sin conexión)</value></data>
   <data name="Nav_Language" xml:space="preserve"><value>Idioma de la interfaz</value></data>
   <data name="Index_Heading" xml:space="preserve"><value>Convierte cualquier texto en un examen</value></data>
-  <data name="Index_Subtitle" xml:space="preserve"><value>Pega una lección, sube un PDF o importa una página web. QuizForge escribe un resumen y un test de opción múltiple con explicaciones.</value></data>
+  <data name="Index_Subtitle" xml:space="preserve"><value>Pega una lección, sube un PDF o importa una página web. MatGPT Quiz escribe un resumen y un test de opción múltiple con explicaciones.</value></data>
   <data name="Kpi_Questions" xml:space="preserve"><value>Preguntas</value></data>
   <data name="Kpi_Difficulty" xml:space="preserve"><value>Dificultad</value></data>
   <data name="Kpi_Language" xml:space="preserve"><value>Idioma</value></data>

@@ -1,4 +1,4 @@
-// QuizForge – quiz interactions (vanilla JS)
+// MatGPT Quiz – quiz interactions (vanilla JS)
 (() => {
   "use strict";
 

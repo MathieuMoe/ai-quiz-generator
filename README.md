@@ -1,16 +1,18 @@
-# QuizForge AI
+<img src="src/QuizForge.Web/wwwroot/img/logo.svg" width="64" alt="" />
+
+# MatGPT Quiz
 
 **Turn any text into a multiple-choice exam with AI.**
-Paste a lesson, an article or your notes: QuizForge writes a short summary and builds a quiz with explanations, ready to take online or export for a class.
+Paste a lesson, an article or your notes: MatGPT Quiz writes a short summary and builds a quiz with explanations, ready to take online or export for a class.
 
 Built with **ASP.NET Core (.NET 10)**, the **Claude API** and a dashboard UI made with **Tailwind CSS + Preline UI** (light and dark mode).
 
-![QuizForge screenshot](docs/screenshot.png)
+![MatGPT Quiz screenshot](docs/screenshot.png)
 
 <details>
 <summary>Dark mode</summary>
 
-![QuizForge dark mode](docs/screenshot-dark.png)
+![MatGPT Quiz dark mode](docs/screenshot-dark.png)
 
 </details>
 

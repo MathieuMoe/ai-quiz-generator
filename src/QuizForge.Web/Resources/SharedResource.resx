@@ -14,7 +14,7 @@
   <data name="Engine_Demo" xml:space="preserve"><value>Demo (offline)</value></data>
   <data name="Nav_Language" xml:space="preserve"><value>Interface language</value></data>
   <data name="Index_Heading" xml:space="preserve"><value>Turn any text into an exam</value></data>
-  <data name="Index_Subtitle" xml:space="preserve"><value>Paste a lesson, upload a PDF or import a web page. QuizForge writes a summary and a multiple-choice quiz with explanations.</value></data>
+  <data name="Index_Subtitle" xml:space="preserve"><value>Paste a lesson, upload a PDF or import a web page. MatGPT Quiz writes a summary and a multiple-choice quiz with explanations.</value></data>
   <data name="Kpi_Questions" xml:space="preserve"><value>Questions</value></data>
   <data name="Kpi_Difficulty" xml:space="preserve"><value>Difficulty</value></data>
   <data name="Kpi_Language" xml:space="preserve"><value>Language</value></data>
