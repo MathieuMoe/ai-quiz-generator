@@ -8,12 +8,13 @@ using QuizForge.Core.Abstractions;
 using QuizForge.Core.Export;
 using QuizForge.Core.Models;
 using QuizForge.Core.Validation;
+using QuizForge.Infrastructure.Engines;
 
 namespace QuizForge.Web.Pages;
 
 [EnableRateLimiting("generate")]
 public sealed partial class IndexModel(
-    IQuizGenerator generator,
+    QuizEngines engines,
     IStringLocalizer<SharedResource> localizer,
     ILogger<IndexModel> logger) : PageModel
 {
@@ -36,18 +37,16 @@ public sealed partial class IndexModel(
 
     public string? ErrorMessage { get; private set; }
 
-    public string EngineName => generator.EngineName;
+    /// <summary>The engine chosen in the header selector (or the default one).</summary>
+    public QuizEngine Engine => EngineSelection.Current(HttpContext, engines);
 
     public void OnGet()
     {
-        ViewData["Engine"] = EngineName;
         Input.Language = Localization.QuizLanguageForCurrentCulture();
     }
 
     public async Task<IActionResult> OnPostAsync(CancellationToken cancellationToken)
     {
-        ViewData["Engine"] = EngineName;
-
         if (Input.File is { Length: > 0 } file)
         {
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -82,7 +81,7 @@ public sealed partial class IndexModel(
 
         try
         {
-            Quiz = await generator.GenerateAsync(request, cancellationToken);
+            Quiz = await Engine.Create().GenerateAsync(request, cancellationToken);
             QuizJson = JsonSerializer.Serialize(Quiz, JsonOptions);
             QuizMarkdown = QuizMarkdownExporter.ToMarkdown(Quiz, request.Language);
         }

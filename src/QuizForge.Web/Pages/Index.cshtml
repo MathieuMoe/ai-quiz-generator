@@ -193,8 +193,8 @@
                 </span>
                 <h3 class="mt-4 text-base font-semibold text-foreground">@L["Empty_Title"]</h3>
                 <p class="mt-1 max-w-sm text-sm text-muted-foreground-1">
-                    @L["Empty_Engine"] <span class="font-medium text-foreground">@(Model.EngineName == "Claude" ? "Claude" : L["Engine_Demo"])</span>.
-                    @if (Model.EngineName != "Claude") { <text>@L["Empty_AddKey"]</text> }
+                    @L["Empty_Engine"] <span class="font-medium text-foreground">@(Model.Engine.IsDemo ? L["Engine_Demo"].Value : Model.Engine.Name)</span>.
+                    @if (Model.Engine.IsDemo) { <text>@L["Empty_AddKey"]</text> }
                 </p>
             </div>
         }

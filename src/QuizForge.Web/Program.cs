@@ -6,6 +6,7 @@ using QuizForge.Core.Abstractions;
 using QuizForge.Core.Models;
 using QuizForge.Core.Validation;
 using QuizForge.Infrastructure;
+using QuizForge.Infrastructure.Engines;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,8 +68,11 @@ app.MapGet("/culture/{culture}", (string culture, string? returnUrl, HttpContext
 });
 
 // JSON API: the same feature, usable from any client (Postman, another app, ...).
-app.MapPost("/api/quiz", async (QuizRequest request, IQuizGenerator generator, CancellationToken ct) =>
+app.MapPost("/api/quiz", async (QuizRequest request, QuizEngines engines, HttpContext context, CancellationToken ct) =>
 {
+    // The engine chosen in the interface (cookie), or the default one for API clients
+    var generator = EngineSelection.Current(context, engines).Create();
+
     var errors = QuizRequestValidator.Validate(request);
     if (errors.Count > 0)
     {
@@ -119,6 +123,8 @@ app.MapPost("/api/import-url", async (ImportUrlRequest body, IWebPageReader read
         Results.Problem(detail, statusCode: status, extensions: new Dictionary<string, object?> { ["code"] = code });
 })
 .RequireRateLimiting("generate");
+
+app.MapEngineSelection();
 
 await app.RunAsync();
 

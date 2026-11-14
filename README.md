@@ -5,7 +5,7 @@
 **Turn any text into a multiple-choice exam with AI.**
 Paste a lesson, an article or your notes: MatGPT Quiz writes a short summary and builds a quiz with explanations, ready to take online or export for a class.
 
-Built with **ASP.NET Core (.NET 10)**, the **Claude API** and a dashboard UI made with **Tailwind CSS + Preline UI** (light and dark mode).
+Built with **ASP.NET Core (.NET 10)**, your choice of AI (**Claude, ChatGPT, Gemini or a local Ollama model**) and a dashboard UI made with **Tailwind CSS + Preline UI** (light and dark mode).
 
 ![MatGPT Quiz screenshot](docs/screenshot.png)
 
@@ -28,6 +28,7 @@ Built with **ASP.NET Core (.NET 10)**, the **Claude API** and a dashboard UI mad
 - 📤 Export to **Markdown** (with answer key, ready to print) or **JSON**
 - 🔌 JSON API (`POST /api/quiz`) for other applications
 - 🌗 Responsive admin-dashboard layout with dark mode (Preline UI)
+- 🤖 **Choose your AI**: Claude, ChatGPT, Gemini or Ollama (free, local) from a selector in the header; each engine appears once its key is configured
 - 🧪 **Offline demo mode**: works without an API key, so anyone can try it in one command
 
 ## How it works
@@ -36,20 +37,24 @@ Built with **ASP.NET Core (.NET 10)**, the **Claude API** and a dashboard UI mad
 flowchart LR
     PDF[PDF / TXT / MD<br/>pdf.js in the browser] --> UI
     URL[Web page URL] --> W[WebPageReader<br/>SSRF guard + HTML extractor] --> UI
-    UI[Razor Pages UI] --> G{IQuizGenerator}
-    API[Minimal API /api/quiz] --> G
-    G -->|API key configured| C[ClaudeQuizGenerator]
-    G -->|no key| D[DemoQuizGenerator]
+    UI[Razor Pages UI] --> R{QuizEngines<br/>selected in the header}
+    API[Minimal API /api/quiz] --> R
+    R -->|Claude key| C[ClaudeQuizGenerator]
+    R -->|OpenAI / Gemini key<br/>or Ollama| O[OpenAiCompatibleQuizGenerator]
+    R -->|always| D[DemoQuizGenerator]
     C -->|tool use + JSON schema| A[(Anthropic Messages API)]
+    O -->|function calling + same schema| X[(Chat Completions API)]
     C --> P[QuizJsonParser<br/>validation]
+    O --> P
 ```
 
 Technical choices worth noting:
 
-- **Structured output with tool use.** The model is forced to call a `create_quiz` tool whose JSON schema matches the domain model. No fragile text parsing.
+- **Structured output with tool use.** The model is forced to call a `create_quiz` tool whose JSON schema matches the domain model (Claude tool use, or OpenAI-style function calling for ChatGPT, Gemini and Ollama). No fragile text parsing.
+- **Pluggable AI engines.** `QuizEngines` is a registry of the configured providers; the header selector stores the choice in a cookie. One `OpenAiCompatibleQuizGenerator` covers ChatGPT, Gemini (OpenAI-compatible endpoint) and Ollama.
 - **Never trust the model.** `QuizJsonParser` validates every field (4 distinct options, valid `correctIndex`, non-empty explanation) and turns problems into clear error messages.
 - **Prompt-injection guard.** The source text is wrapped in `<document>` tags and treated as data, not instructions.
-- **Clean architecture.** `Core` has no dependencies (models, prompts, parsing, export); `Infrastructure` holds the AI providers behind `IQuizGenerator`, so adding OpenAI or Semantic Kernel is a new class, not a rewrite.
+- **Clean architecture.** `Core` has no dependencies (models, prompts, parsing, export); `Infrastructure` holds the AI providers behind `IQuizGenerator`, so a new provider is a new class, not a rewrite (that is how ChatGPT, Gemini and Ollama were added).
 - **SSRF protection for web import.** Only http/https; every connection, including redirects, is checked at socket level: localhost, private networks and cloud metadata addresses (`169.254.169.254`) are blocked. Size and time limits too.
 - **Localization the .NET way.** `IStringLocalizer` + `.resx` resources, culture stored in the standard ASP.NET Core cookie, validation errors returned as codes so each language gets its own message.
 - **Cost protection.** Built-in ASP.NET Core rate limiting (10 generations/minute per IP) and input size limits.
@@ -60,7 +65,7 @@ Technical choices worth noting:
 ```
 src/
   QuizForge.Core/            Domain models, validation, prompts, JSON parsing, Markdown export
-  QuizForge.Infrastructure/  Claude generator (HttpClient), offline demo generator, DI setup
+  QuizForge.Infrastructure/  Claude and OpenAI-compatible generators (HttpClient), engine registry, offline demo generator, DI setup
   QuizForge.Web/             Razor Pages UI, minimal API, rate limiting, health check
     Resources/               UI translations: SharedResource.resx (en), .fr, .es, .ca
     Styles/                  Tailwind CSS source (app.css) + vendor copy script
@@ -79,16 +84,25 @@ cd ai-quiz-generator
 dotnet run --project src/QuizForge.Web
 ```
 
-The app starts in **demo mode**. To use Claude, add your [Anthropic API key](https://console.anthropic.com/):
+The app starts in **demo mode**. Add one or more AI keys (stored with user-secrets, never in the repo); every configured engine appears in the header selector:
 
 ```bash
+# Claude  - https://console.anthropic.com/
 dotnet user-secrets set "Claude:ApiKey" "sk-ant-..." --project src/QuizForge.Web
+# ChatGPT - https://platform.openai.com/api-keys
+dotnet user-secrets set "OpenAI:ApiKey" "sk-..." --project src/QuizForge.Web
+# Gemini (free tier available) - https://aistudio.google.com/apikey
+dotnet user-secrets set "Gemini:ApiKey" "AIza..." --project src/QuizForge.Web
+# Ollama (free, runs on your machine) - https://ollama.com, then: ollama pull llama3.2
+dotnet user-secrets set "Ollama:Enabled" "true" --project src/QuizForge.Web
+# Optional: engine selected by default
+dotnet user-secrets set "Ai:Default" "gemini" --project src/QuizForge.Web
 ```
 
 ### With Docker
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-... docker compose up --build
+OPENAI_API_KEY=sk-... docker compose up --build   # or ANTHROPIC_API_KEY / GEMINI_API_KEY
 # open http://localhost:8080
 ```
 
@@ -96,9 +110,13 @@ ANTHROPIC_API_KEY=sk-ant-... docker compose up --build
 
 | Setting | Default | Description |
 |---|---|---|
-| `Claude:ApiKey` / `ANTHROPIC_API_KEY` | – | Enables Claude. Without it, demo mode is used. |
+| `Ai:Default` | first configured | Default engine: `claude`, `openai`, `gemini`, `ollama` or `demo`. |
+| `Claude:ApiKey` / `ANTHROPIC_API_KEY` | – | Enables Claude. |
 | `Claude:Model` | `claude-sonnet-4-5` | Any model from the [models list](https://docs.claude.com/en/docs/about-claude/models). |
 | `Claude:MaxTokens` | `4096` | Maximum answer size. |
+| `OpenAI:ApiKey` / `OPENAI_API_KEY` | – | Enables ChatGPT. `OpenAI:Model` defaults to `gpt-5-mini`. |
+| `Gemini:ApiKey` / `GEMINI_API_KEY` | – | Enables Gemini. `Gemini:Model` defaults to `gemini-2.5-flash`. |
+| `Ollama:Enabled` | `false` | Enables a local Ollama model (`Ollama:Model`, `Ollama:BaseUrl`). |
 | `WebImport:AllowPrivateNetworks` | `false` | Allows importing pages from localhost / private networks. Development only. |
 
 ## Front-end (optional)
@@ -145,7 +163,7 @@ CI runs the build and the tests on every push (GitHub Actions).
 - [x] Interface in 4 languages
 - [ ] Word (.docx) upload
 - [ ] OCR for scanned PDFs
-- [ ] OpenAI / Semantic Kernel provider
+- [x] ChatGPT, Gemini and Ollama providers, chosen in the interface
 - [ ] Save quizzes and share them with a link
 - [ ] Open questions with AI-assisted grading
 

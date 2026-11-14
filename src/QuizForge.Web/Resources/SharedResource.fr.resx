@@ -46,7 +46,9 @@
   <data name="Quiz_TryAgain" xml:space="preserve"><value>Recommencer</value></data>
   <data name="Empty_Title" xml:space="preserve"><value>Votre quiz apparaîtra ici</value></data>
   <data name="Empty_Engine" xml:space="preserve"><value>Moteur :</value></data>
-  <data name="Empty_AddKey" xml:space="preserve"><value>Ajoutez une clé API Anthropic pour générer les questions avec Claude.</value></data>
+  <data name="Empty_AddKey" xml:space="preserve"><value>Ajoutez une clé API Claude, ChatGPT ou Gemini (ou lancez Ollama) pour générer les questions avec l'IA.</value></data>
+  <data name="Engine_Choose" xml:space="preserve"><value>Moteur d'IA</value></data>
+  <data name="Engine_Hint" xml:space="preserve"><value>D'autres moteurs apparaissent quand vous configurez leur clé API (voir README).</value></data>
   <data name="Error_PdfNeedsJs" xml:space="preserve"><value>L'import de PDF nécessite JavaScript. Activez-le ou collez le texte.</value></data>
   <data name="Error_FileType" xml:space="preserve"><value>Seuls les fichiers .txt ou .md de 1 Mo max. sont acceptés.</value></data>
   <data name="Validation_TextTooShort" xml:space="preserve"><value>Le texte doit contenir au moins {0} caractères.</value></data>
