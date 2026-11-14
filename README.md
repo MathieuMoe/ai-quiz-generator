@@ -40,7 +40,9 @@ flowchart LR
     UI[Razor Pages UI] --> R{QuizEngines<br/>selected in the header}
     API[Minimal API /api/quiz] --> R
     R -->|Claude key| C[ClaudeQuizGenerator]
-    R -->|OpenAI / Gemini key<br/>or Ollama| O[OpenAiCompatibleQuizGenerator]
+    R -->|OpenAI key or Ollama| O[OpenAiCompatibleQuizGenerator]
+    R -->|Gemini key| GM[GeminiQuizGenerator<br/>native API + function calling]
+    GM --> P
     R -->|always| D[DemoQuizGenerator]
     C -->|tool use + JSON schema| A[(Anthropic Messages API)]
     O -->|function calling + same schema| X[(Chat Completions API)]
@@ -51,7 +53,7 @@ flowchart LR
 Technical choices worth noting:
 
 - **Structured output with tool use.** The model is forced to call a `create_quiz` tool whose JSON schema matches the domain model (Claude tool use, or OpenAI-style function calling for ChatGPT, Gemini and Ollama). No fragile text parsing.
-- **Pluggable AI engines.** `QuizEngines` is a registry of the configured providers; the header selector stores the choice in a cookie. One `OpenAiCompatibleQuizGenerator` covers ChatGPT, Gemini (OpenAI-compatible endpoint) and Ollama.
+- **Pluggable AI engines.** `QuizEngines` is a registry of the configured providers; the header selector stores the choice in a cookie. One `OpenAiCompatibleQuizGenerator` covers ChatGPT and Ollama; `GeminiQuizGenerator` uses Gemini's native API (works with the new `AQ.` keys).
 - **Never trust the model.** `QuizJsonParser` validates every field (4 distinct options, valid `correctIndex`, non-empty explanation) and turns problems into clear error messages.
 - **Prompt-injection guard.** The source text is wrapped in `<document>` tags and treated as data, not instructions.
 - **Clean architecture.** `Core` has no dependencies (models, prompts, parsing, export); `Infrastructure` holds the AI providers behind `IQuizGenerator`, so a new provider is a new class, not a rewrite (that is how ChatGPT, Gemini and Ollama were added).
@@ -92,7 +94,7 @@ dotnet user-secrets set "Claude:ApiKey" "sk-ant-..." --project src/QuizForge.Web
 # ChatGPT - https://platform.openai.com/api-keys
 dotnet user-secrets set "OpenAI:ApiKey" "sk-..." --project src/QuizForge.Web
 # Gemini (free tier available) - https://aistudio.google.com/apikey
-dotnet user-secrets set "Gemini:ApiKey" "AIza..." --project src/QuizForge.Web
+dotnet user-secrets set "Gemini:ApiKey" "AQ...." --project src/QuizForge.Web
 # Ollama (free, runs on your machine) - https://ollama.com, then: ollama pull llama3.2
 dotnet user-secrets set "Ollama:Enabled" "true" --project src/QuizForge.Web
 # Optional: engine selected by default
@@ -115,7 +117,7 @@ OPENAI_API_KEY=sk-... docker compose up --build   # or ANTHROPIC_API_KEY / GEMIN
 | `Claude:Model` | `claude-sonnet-4-5` | Any model from the [models list](https://docs.claude.com/en/docs/about-claude/models). |
 | `Claude:MaxTokens` | `4096` | Maximum answer size. |
 | `OpenAI:ApiKey` / `OPENAI_API_KEY` | – | Enables ChatGPT. `OpenAI:Model` defaults to `gpt-5-mini`. |
-| `Gemini:ApiKey` / `GEMINI_API_KEY` | – | Enables Gemini. `Gemini:Model` defaults to `gemini-2.5-flash`. |
+| `Gemini:ApiKey` / `GEMINI_API_KEY` | – | Enables Gemini. `Gemini:Model` defaults to `gemini-flash-latest`. |
 | `Ollama:Enabled` | `false` | Enables a local Ollama model (`Ollama:Model`, `Ollama:BaseUrl`). |
 | `WebImport:AllowPrivateNetworks` | `false` | Allows importing pages from localhost / private networks. Development only. |
 

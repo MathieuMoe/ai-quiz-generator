@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using QuizForge.Core.Abstractions;
 using QuizForge.Infrastructure.Claude;
 using QuizForge.Infrastructure.Demo;
+using QuizForge.Infrastructure.Gemini;
 using QuizForge.Infrastructure.OpenAi;
 
 namespace QuizForge.Infrastructure.Engines;
@@ -56,8 +57,9 @@ public sealed class QuizEngines
             var options = openAi.Get(section);
             if (options.IsConfigured)
             {
-                engines.Add(new(id, name, false, () =>
-                    new OpenAiCompatibleQuizGenerator(httpClientFactory.CreateClient(id), options, name, loggerFactory.CreateLogger<OpenAiCompatibleQuizGenerator>())));
+                engines.Add(new(id, name, false, id == GeminiId
+                    ? () => new GeminiQuizGenerator(httpClientFactory.CreateClient(id), options, loggerFactory.CreateLogger<GeminiQuizGenerator>())
+                    : () => new OpenAiCompatibleQuizGenerator(httpClientFactory.CreateClient(id), options, name, loggerFactory.CreateLogger<OpenAiCompatibleQuizGenerator>())));
             }
         }
 
